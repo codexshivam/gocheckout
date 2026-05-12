@@ -1,0 +1,62 @@
+name: Build Web
+
+on:
+  push:
+    branches: [main, production]
+  workflow_dispatch:
+    inputs:
+      use_sample_data:
+        description: 'Use sample data (true/false)'
+        required: false
+        default: 'false'
+
+jobs:
+  build-web:
+    name: Build Flutter Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+
+      - name: Build Web (Production)
+        run: |
+          flutter build web \
+            --release \
+            --dart-define=USE_SAMPLE_DATA=${{ inputs.use_sample_data || 'false' }} \
+            --dart-define=APPWRITE_ENDPOINT=${{ secrets.APPWRITE_ENDPOINT }} \
+            --dart-define=APPWRITE_PROJECT_ID=${{ secrets.APPWRITE_PROJECT_ID }} \
+            --dart-define=APPWRITE_DATABASE_ID=${{ secrets.APPWRITE_DATABASE_ID }} \
+            --dart-define=COL_USERS=${{ secrets.COL_USERS }} \
+            --dart-define=COL_STORES=${{ secrets.COL_STORES }} \
+            --dart-define=COL_INVITES=${{ secrets.COL_INVITES }} \
+            --dart-define=COL_COUPONS=${{ secrets.COL_COUPONS }} \
+            --dart-define=COL_ORDERS=${{ secrets.COL_ORDERS }} \
+            --dart-define=COL_PRODUCTS=${{ secrets.COL_PRODUCTS }} \
+            --dart-define=COL_CHECKOUT_LINKS=${{ secrets.COL_CHECKOUT_LINKS }} \
+            --dart-define=COL_STORE_STATS=${{ secrets.COL_STORE_STATS }} \
+            --dart-define=R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }} \
+            --dart-define=R2_UPLOAD_ENDPOINT=${{ secrets.R2_UPLOAD_ENDPOINT }} \
+            --dart-define=R2_UPLOAD_TOKEN=${{ secrets.R2_UPLOAD_TOKEN }} \
+            --dart-define=AUTH_ENABLE_TELEMETRY=true \
+            --dart-define=AUTH_TELEMETRY_SAMPLE_PERCENT=100
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build-${{ github.sha }}
+          path: build/web/
+          retention-days: 7
