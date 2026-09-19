@@ -1,96 +1,37 @@
-# merchantportal
+# GoCommerce (Public Preview Under Development)
 
-GoCheckout merchant portal built with Flutter and Appwrite.
+> 
+>
+> 🚧 **PROJECT STATUS: UNDER ACTIVE DEVELOPMENT** 🚧
+>
+> This project is currently in the early stages of active development. The codebase is volatile, features are subject to rapid iteration, and it is not yet ready for production deployment or public consumption.
 
-## Backend
+## 📖 About The Project
 
-This project uses Appwrite (not Firebase) for:
+This repository houses the core application for a **Unified E-Commerce Checkout and Integration Platform**. Once completed, this platform will be deployed as a highly responsive **Web Application**.
 
-- Authentication (Google OAuth)
-- User profile document storage
-- Team invite onboarding routing
-- Store creation and subscription status updates via Realtime
+The primary goal of this platform is to streamline the e-commerce purchasing journey, providing a seamless, secure, and unified checkout experience that integrates smoothly with various storefronts, payment gateways, and inventory systems.
 
-## Appwrite setup
+## 🛠 Tech Stack
 
-1. Create an Appwrite project and database.
-2. Create collections for users, stores, and invites.
-3. Enable Google OAuth in Appwrite Auth providers.
-4. Add allowed web platform and redirect URL in Appwrite Console.
-5. Update constants in [lib/data/config/appwrite_config.dart](lib/data/config/appwrite_config.dart):
-	- `endpoint`
-	- `projectId`
-	- `databaseId`
-	- `colUsers`, `colStores`, `colInvites`
+The application leverages a modern, scalable architecture designed for high-performance web delivery:
 
-## Cloudflare R2 Signed Upload Contract
+* **Frontend:** Flutter (Optimized for Web) - chosen for its rich UI capabilities and cross-platform consistency.
 
-Uploads are done with a two-step signed URL flow from the Flutter app:
+* **Backend & Infrastructure:** Google Firebase
 
-1. App calls your backend signed-upload endpoint.
-2. Backend returns a one-time `uploadUrl` and final `publicUrl`.
-3. App uploads file bytes directly to `uploadUrl` using HTTP PUT.
-4. App stores `publicUrl` in Appwrite store document fields.
+  * *Authentication:* Secure user identity and session management.
 
-Configure these values in [lib/data/config/r2_config.dart](lib/data/config/r2_config.dart):
+  * *Firestore:* Real-time NoSQL database for cart, inventory, and order management.
 
-- `signedUploadEndpoint`
-- `publicBaseUrl`
-- `uploadApiToken` (optional)
+  * *Hosting:* Fast, secure web deployment.
 
-### Request
+  * *(Anticipated)* *Cloud Functions:* Serverless backend logic for secure payment processing and third-party integrations.
 
-`POST {signedUploadEndpoint}`
+## ⚖️ Ownership and Licensing
 
-Headers:
+**© 2026 Shivam Yadav. All Rights Reserved.**
 
-- `Content-Type: application/json`
-- `Authorization: Bearer <token>` (only if `uploadApiToken` is set)
+This platform and its associated source code are the exclusive intellectual property of a commercial business owned and operated by **Shivam Yadav**.
 
-Body:
-
-```json
-{
-	"objectPath": "merchants/<storeId>/docs/pan_1712345678.jpg",
-	"contentType": "image/jpeg"
-}
-```
-
-### Success Response
-
-```json
-{
-	"uploadUrl": "https://<signed-put-url>",
-	"publicUrl": "https://pub-merchantportal-assets.r2.dev/merchants/<storeId>/docs/pan_1712345678.jpg"
-}
-```
-
-### Error Response
-
-```json
-{
-	"error": "Human readable message"
-}
-```
-
-Use proper non-2xx status codes for failures. The Flutter app now includes timeout + retry handling and user-facing error alerts.
-
-## Run locally
-
-1. Install dependencies:
-
-```bash
-flutter pub get
-```
-
-2. Run analyzer:
-
-```bash
-flutter analyze
-```
-
-3. Start app:
-
-```bash
-flutter run -d chrome
-```
+This is **Proprietary Software**, not open-source. Unauthorized copying, distribution, modification, or use of this software, via any medium, is strictly prohibited without explicit written permission from the owner.
