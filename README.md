@@ -1,4 +1,4 @@
-# GoCommerce (Public Preview Under Development)
+# GoCommerce
 
 > 
 >
